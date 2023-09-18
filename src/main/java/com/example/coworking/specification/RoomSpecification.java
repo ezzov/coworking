@@ -13,25 +13,19 @@ import java.time.LocalDateTime;
 @Component
 public class RoomSpecification {
 
-    public Specification<Room> checkOccupancyForDates(LocalDateTime from, LocalDateTime until) {
+    public Specification<Room> checkOccupancyForDates(Long roomId, LocalDateTime from, LocalDateTime until) {
 
         return (root, query, criteriaBuilder) -> {
-            Join<Room, Booking> join = root.join("room", JoinType.LEFT);
-            Predicate pr1 = criteriaBuilder.and(criteriaBuilder.lessThan(join.get("from"), from),
-                    criteriaBuilder.lessThanOrEqualTo(join.get("from"), until));
-            Predicate pr2 = criteriaBuilder.and(criteriaBuilder.greaterThanOrEqualTo(join.get("until"), from),
-                    criteriaBuilder.greaterThan(join.get("until"), until));
-            return criteriaBuilder.or(pr1, pr2);
+            Join<Room, Booking> join = root.join("bookingList", JoinType.LEFT);
+            Predicate pr1 = criteriaBuilder.greaterThan(join.get("endDate"), from);
+            Predicate pr2 = criteriaBuilder.lessThan(join.get("startDate"), until);
+            Predicate pr3 = criteriaBuilder.equal(root.get("id"), roomId);
+            return criteriaBuilder.and(pr1, pr2, pr3);
         };
     }
 
     public Specification<Room> byCapacity(Integer capacity) {
         return ((root, query, criteriaBuilder) ->
                 criteriaBuilder.greaterThanOrEqualTo(root.get("capacity"), capacity));
-    }
-
-    public Specification<Room> byId(Long id) {
-        return ((root, query, criteriaBuilder) ->
-                criteriaBuilder.equal(root.get("id"), id));
     }
 }

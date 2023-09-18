@@ -1,5 +1,6 @@
 package com.example.coworking.controller;
 
+import com.example.coworking.dto.RoomCheckDto;
 import com.example.coworking.dto.RoomFilterDto;
 import com.example.coworking.entity.Room;
 import com.example.coworking.service.RoomService;
@@ -41,6 +42,10 @@ public class RoomController {
         return new ResponseEntity<>(service.findByFilter(filterDto, page), HttpStatus.OK);
     }
 
+    @PostMapping("/checkRoomOccupancy")
+    public ResponseEntity<Boolean> checkRoomOccupancy(@RequestBody RoomCheckDto dto) {
+        return new ResponseEntity<>(service.checkRoomOccupancy(dto), HttpStatus.OK);
+    }
 
     @PostMapping
     public ResponseEntity<Room> save(@RequestBody Room object) {
